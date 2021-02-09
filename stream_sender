@@ -1,0 +1,35 @@
+#!/usr/bin/python3
+
+import socket
+# create a socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+
+#use quotes '' to make the ipaddr into a string
+ipaddr = '172.16.1.15' #target IP
+port = 5309             #target port
+
+#connect is used to tell it to connect to ((ipaddr, port))
+s.connect((ipaddr, port))
+
+#send a string to the target, prefix b'msg' to make a bytes-like-object
+#python3 doesn't like strings sent by itself
+message = b"Hi"
+
+#send the message to the target, the socket must be connected to a remote socket
+s.send(message)
+
+#s = socket
+#send = method
+#message = the message variable
+
+#receive data from the socket
+#split the return message into two variables. The return value is a pair (bytes(data), address(ip, and port))
+data, conn = s.recvfrom(1024
+
+#default encoding is 'utf-8' 
+#print the response from the receiver, utf-8 is the default 
+print(data.decode('utf-8'))
+
+#close = function to close connection else it will hang 
+s.close()
