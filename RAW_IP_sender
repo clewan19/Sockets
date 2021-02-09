@@ -1,0 +1,55 @@
+#!/usr/bin/python3
+import socket
+
+#for system level commands:
+import sys
+
+#for establishing the packet structure (used later) this will allow direct access to the methods and functions in the struct mod
+from struct import *
+
+#for encoding
+import base64
+import binascii 
+
+#create a raw socket
+try:
+  s = socket.socket(AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
+except socket.error as msg:
+  print(msg)
+  sys.exit()
+  
+packet = ' '
+
+src_ip = "10.10.0.40"
+dst_ip = "172.16.1.15"
+
+#############################
+## Build a packet header ####
+#############################
+#Let's add the IPv4 header info
+
+ip_ver_ihl = 69                 #this is putting the decimal conversion of 0x45 for Version and Internet Header Length
+ip_tos = 96                     #this combines the DSCP and ECN fields
+ip_len = 0                      #the kernel will fill in the actual length of the packet
+ip_id = 1984                    #this sets the IP Identification of the packet
+ip_frag = 0                     #this sets fragmentation off
+ip_ttl = 64                     #this determines the TTL of the packet when leaving the machine 
+ip_proto = 64                   #this sets the ip protocol to 6 (TCP) so additional headers are required (reference IANA) 
+ip_check = 0                    #the kernel will fill in the checksum for the packet 
+ip_srcadd = socket.inet_aton(src_ip)    #inet_aton(string) will convert IP address to a 32 bit binary number
+ip_dstadd = socket.inet_aton(dst_ip)    #inet_aton(string) will convert IP address to a 32 bit binary number
+
+#pack the header
+
+ip_header = pack('!BBHHHBBH4s4s' , ip_ver_ihl, ip_tos, ip_len, ip_id, ip_frag, ip_ttl, ip_proto, ip_check, ip_srcadd, ip_dstadd)
+
+#add the message
+message = b'last_name'
+hidden_msg = binascii.hexlify(message)
+
+#final packet creation
+packet = ip_header + hidden_msg
+
+#Send the packet, Sendto is used when we don't already had a socket connection. Sendall or send if we do
+s.sendto(packet, (dest_ip, 0))
+
