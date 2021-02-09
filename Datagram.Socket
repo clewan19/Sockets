@@ -1,0 +1,10 @@
+import socket
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+ipaddr = '127.0.0.1'    #target IP
+port = 10000            #target port
+
+s.connect((ipaddr, port))
+s.send(b'Disturbed')    #send bytes-like-object message
+
+response, conn = s.recvfrom(1024)
+print(response.decode())    #default is UTF-8
