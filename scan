@@ -1,0 +1,15 @@
+#!/bin/bash
+
+echo "Enter network address (eg. 192.168.0): "
+read net
+echo "Enter starting host number (eg. 1): "
+read start
+echo "Enter ending host number (eg. 254): "
+read end
+echo "Enter ports space-deliminated (eg. 21-23 80): "
+read ports
+
+for ((i=$start; $i<=$end; i++))
+do 
+  nc -nvzw1 $net.$i $ports 2>&1 | grep -E 'open' 
+done
